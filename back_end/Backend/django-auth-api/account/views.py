@@ -1,17 +1,21 @@
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from account.serializers import UserRegisterationSerializer, UserLoginSerializer, UserProfileSerializer, UserChangePasswordSerializer, UserSendPasswordResetEmailSerializer, UserPasswordResetSerializer
+from account.serializers import UserRegisterationSerializer, UserLoginSerializer, UserProfileSerializer, UserChangePasswordSerializer, UserSendPasswordResetEmailSerializer, UserPasswordResetSerializer,UserMessageSerializer
 from django.contrib.auth import authenticate
 from account.renderers import UserRenderer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import permissions
+from rest_framework import serializers
+from account.utils import Util
+
 
 
 
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+from rest_framework.decorators import api_view
 
 # Generate Token Manually
 
@@ -128,3 +132,30 @@ class UserLogoutView(APIView):
 @method_decorator(csrf_exempt, name='dispatch')
 class UserLogoutViewCSRFExempt(UserLogoutView):
     pass
+
+
+
+@api_view(['POST'])
+def send_message(request):
+    email = request.data.get('email')
+    address = request.data.get('address')
+
+    if not email and not address:
+        return Response({'error': 'email and address are required'})
+
+    user_data = {'email': email, 'address': address}
+    user_serializer = UserMessageSerializer(data=user_data)
+    body="we send this mail.The vehicle is near to you"
+    data={
+        'email_subject':'Mail from Garbage Tracking system',
+                'body':body,
+               'to_email':email
+            }
+    
+    if user_serializer.is_valid():
+        user_serializer.save()
+        Util.send_mail(data)
+        return Response({'message': 'User data saved successfully'})
+    else:
+        return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+

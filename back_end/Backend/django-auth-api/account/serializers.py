@@ -45,7 +45,7 @@ class UserLoginSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'email', 'name']
+        fields =['role','id', 'email', 'name','lang','lati']
 
 
 class UserChangePasswordSerializer(serializers.Serializer):
@@ -136,4 +136,13 @@ class UserPasswordResetSerializer(serializers.Serializer):
             PasswordResetTokenGenerator().check_token(user,token)
             raise ValidationError(
                     'Token is not Valid or Expired')
+        
+class UserMessageSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(max_length=255)
+
+    class Meta:
+        model = User
+        fields = ['email', 'address']
+
+       
             
