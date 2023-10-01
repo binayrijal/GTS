@@ -87,3 +87,15 @@ class User(AbstractBaseUser,PermissionsMixin):
         "Is the user a member of staff?"
         # Simplest possible answer: All admins are staff
         return self.is_admin
+
+
+
+class Event(models.Model):
+    title = models.CharField(max_length=200)
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+  
+   
+
+    def __str__(self):
+        return self.title

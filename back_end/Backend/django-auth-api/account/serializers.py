@@ -10,6 +10,10 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from account.utils import Util
 
+# for events,date from calendar
+from .models import Event
+
+
 class UserRegisterationSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(
         style={'input_type:password'}, write_only=True)
@@ -136,6 +140,7 @@ class UserPasswordResetSerializer(serializers.Serializer):
             PasswordResetTokenGenerator().check_token(user,token)
             raise ValidationError(
                     'Token is not Valid or Expired')
+<<<<<<< HEAD
         
 class UserMessageSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(max_length=255)
@@ -146,3 +151,17 @@ class UserMessageSerializer(serializers.ModelSerializer):
 
        
             
+=======
+            
+            
+class UserLogoutSerializer(serializers.Serializer):
+    pass
+            
+    
+class EventSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Event
+        fields = '__all__'
+
+
+>>>>>>> 100e2a8bb02581432211bf3d7c052188edbe8318

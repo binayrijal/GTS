@@ -14,7 +14,6 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
-
 const roles = [
   {
     value: "Citizen",
@@ -30,24 +29,6 @@ const roles = [
   // },
 ];
 
-function Copyright(props) {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
-      {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
-        Garbage Tracking System
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
-
 // TODO remove, this demo shouldn't need to reset the theme.
 
 const defaultTheme = createTheme();
@@ -56,22 +37,26 @@ export default function SignUp() {
   const [role, setRole] = useState(""); // for role selection
 
   const handleChange = (event) => {
+    event.preventDefault();
     setRole(event.target.value);
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      role:data.get('role'),
-      firstName: data.get("firstName"),
-      lastName: data.get("lastName"),
-      longitude:data.get('longitude'),
-      latitude:data.get('latitude'),
-      number:data.get('number'),
-      email: data.get("email"),
-      password: data.get("password"),
+  const handleSubmit = async (data) => {
+    const response = await fetch("http://127.0.0.1:8000/api/user/signup/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
     });
+    console.log(response.body);
+
+    if (response.ok) {
+      const jsonResponse = await response.json();
+      return jsonResponse;
+    } else {
+      throw new Error(response.statusText);
+    }
   };
 
   //this is for fetch address of respective users
@@ -199,7 +184,7 @@ export default function SignUp() {
                   variant="contained"
                   bgcolor="primary"
                   onClick={showLocation}
-                  sx={{p:1.9}}
+                  sx={{ p: 1.9 }}
                 >
                   Fetch
                 </Button>
@@ -210,7 +195,7 @@ export default function SignUp() {
                   required
                   fullWidth
                   id="standard-number"
-                  label="Citizenship NO:"
+                  label={role === "Citizen" ? "Phone No" : "License Number"}
                   name="number"
                   type="number"
                   autoComplete="off"
@@ -266,7 +251,6 @@ export default function SignUp() {
                 </Link>
               </Grid>
             </Grid>
-            <Copyright sx={{ mt: 5 }} />
           </Box>
         </Box>
       </Container>
